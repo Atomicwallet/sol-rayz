@@ -1,19 +1,22 @@
 # @nfteyez/sol-rayz
 
-These packages created to simplify the process of parsing NFTs on Solana. The project written in TypeScript and is used/battle-tested by [NftEyez.Global](https://nfteyez.global/) with thousands of daily users.
+These packages created to simplify the process of parsing NFTs on Solana.
 
-DEMO: [Galley Demo](https://create-dapp-solana-nextjs.vercel.app/gallery)
+Can be used for basic things like fetch all NFTs for specific wallet. Designed to be used in browser or Node.JS env.
+
+## Install
+
+You need install `@solana/web3.js` in your project, since it is used as peer dependency.
+
+```
+npm i @solana/web3.js
+npm i @nfteyez/sol-rayz
+
+```
 
 ## How to use
 
-The simplest way to use it in your app is install package, also you need install `@solana/web3.js` in your project, since it is used as peer dependency.
-
-```bash
-npm i @solana/web3.js
-npm i @nfteyez/sol-rayz
-```
-
-then use it this way:
+The very basic example looks like this:
 
 ```javascript
 import {
@@ -21,62 +24,138 @@ import {
   getParsedNftAccountsByOwner,
 } from "@nfteyez/sol-rayz";
 
-// const address = "3EqUrFrjgABCWAnqMYjZ36GcktiwDtFdkNYwY6C6cDzy;
-// or use Solana Domain
-const address = "NftEyez.sol";
+try {
+  // const address = "3EqUrFrjgABCWAnqMYjZ36GcktiwDtFdkNYwY6C6cDzy;
+  // or use Solana Domain
+  const address = "NftEyez.sol";
 
-const publicAddress = await resolveToWalletAddress({
-  text: address
+  const publicAddress = await resolveToWalletAddress({
+    text: address
+  });
+
+  const nftArray = await getParsedNftAccountsByOwner({
+    publicAddress,
+  });
+} catch (error) {
+  console.log("Error thrown, while fetching NFTs", error.message);
+}
+```
+
+1. First, we import methods from "@nfteyez/sol-rayz".
+2. Then we use `resolveToWalletAddress()` fn to check if passed string is [Solana Domain Names](https://docs.bonfida.org/collection/v/help/an-introduction-to-the-solana-name-service) or just usual Solana address, it also checks if such address is valid Solana public key. Otherwise, it throw the error. You can also skip this method if you are sure you have correct Solana wallet public key.
+3. Finaly, we fetch all NFTs for this address with `getParsedNftAccountsByOwner()` method, passing object with only 1 argument `publicAddress`.
+
+### Some Notes
+
+In this example we pass object with single 1 argument `publicAddress`.
+However, in real-life scenario, most times you will also wish to pass at least `Connection` object with your custom rpc-node. By default `getParsedNftAccountsByOwner()` fetches NFTs from Solana `mainnet` rpc-node, but since this method may do thousands of rpc-node calls for single wallet (depends of number of NFTs it holds), you may be quickly banned by network for abusing it. Custom RPC-nodes doesn't have such restrictions.
+
+Keep in mind most methods from the package throw an error in case of any issues, so you might need to wrap them with `try-catch` block. This done intentionaly to force you handle possible errors and to provide you with proper error message.
+
+## Available Methods
+
+Here is the list of available methods:
+
+| Method Name                           | Returns                                                                    |     |
+| ------------------------------------- | -------------------------------------------------------------------------- | --- |
+| getParsedNftAccountsByOwner           | List of valid NFTs holded by passed wallet                                 |     |
+| getParsedAccountByMint                | Mint information. Finding the token owner is main purpose of using this fn |     |
+| getParsedNftAccountsByUpdateAuthority | ????                                                                       |     |
+
+| Utils Method Name        | Returns                                                                                                                          |     |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | --- |
+| resolveToWalletAddress   | Can be used to to check and resolve provided text (like Solana Domain name ) into valid Solana wallet address. or fail otherwise |     |
+| isValidSolanaAddress     | Check if passed address is valid Solana address                                                                                  |     |
+| createConnectionConfig   | ???                                                                                                                              |     |
+| getSolanaMetadataAddress | Get Addresses of Metadata account assosiated with Mint Token                                                                     |     |
+| decodeTokenMetadata      | Decode Buffer-type data into readable object                                                                                     |     |
+
+### `getParsedNftAccountsByOwner`
+
+`getParsedNftAccountsByOwner` - return parsed list of NFTs (SPL Tokens) for given wallet public address. Each item in array have all data specified on the blockchain. The NFT metadata stored separately, you need to pick `uri` property for each token and fetch data youself.
+
+```javascript
+import {
+  getParsedNftAccountsByOwner
+} from "@nfteyez/sol-rayz";
+
+const tokenList = await getParsedNftAccountsByOwner({
+  /**
+   * Wallet public address
+   */
+  publicAddress: StringPublicKey;
+  /**
+   * Optionally provide your own connection object.
+   * Otherwise createConnectionConfig() will be used
+   */
+  connection?: Connection;
+  /**
+   * Remove possible rust's empty string symbols `\x00` from the values,
+   * which is very common issue.
+   * Default is true
+   */
+  sanitize?: boolean;
+  /**
+   * TODO: Add description within README and link here
+   * Default is false - slow method
+   * true - is fast method
+   */
+  strictNftStandard?: boolean;
+  /**
+   * Limit response by this number
+   * by default response limited by 5000 NFTs
+   */
+  limit?: number;
+  /**
+   * Limit number of PublicKeys per request to `getMultipleAccountsInfo`
+   * Default is 99
+   */
+  metaAccountsRequestChunkSize?: number;
 });
+```
 
-const nftArray = await getParsedNftAccountsByOwner({
-  publicAddress,
+`createConnectionConfig` - method for creating a "connection" with Solana, have two params: clusterApi and commitment.
+
+`isValidSolanaAddress` - check if provided string is valid Solana address.
+
+```javascript
+import { isValidSolanaAddress } from "@nfteyez/sol-rayz";
+
+const isValidAddress: boolean = isValidSolanaAddress((walletPublicKey: string));
+```
+
+`getParsedAccountByMint` - return parsed account for given mint address.
+
+```javascript
+import { getParsedAccountByMint } from '@nfteyez/sol-rayz';
+
+const parsedAccountByMint: ParsedAccountInfo = getParsedAccountByMint({
+  /**
+   * Mint address
+   */
+  mintAddress: StringPublicKey;
+  /**
+   * Optionally provide your own connection object.
+   * Otherwise createConnectionConfig() will be used
+   */
+  connection?: Connection;
 });
 ```
 
-## Details
+`getParsedNftAccountsByUpdateAuthority` - return parsed list of NFTs (SPL Tokens) for given update authority. Each item in array have all data specified on the blockchain. The NFT metadata stored separately, you need to pick `uri` property for each token and fetch data youself.
 
-This project consists of 2 packages. Please refer to specific README file for in-depth details:
+```javascript
+import { getParsedNftAccountsByUpdateAuthority } from '@nfteyez/sol-rayz';
 
-- [`@nfteyez/sol-rayz`](https://github.com/NftEyez/sol-rayz/tree/main/packages/sol-rayz) - basic functionality, like fetch all NFTs for specific wallet or by Authority. Designed to be used in browser or Node.JS env. Read [Details](https://github.com/NftEyez/sol-rayz/tree/main/packages/sol-rayz).
-- [`@nfteyez/sol-rayz-react`](https://github.com/NftEyez/sol-rayz/tree/main/packages/sol-rayz-react) - bunch of hooks and utils to be used within React app. You can think of it as highlevel construction upon `@nfteyez/sol-rayz` package to simplify its use in UI. Read [Details](https://github.com/NftEyez/sol-rayz/tree/main/packages/sol-rayz-react).
-
-<hr />
-
-## Development
-
-### This section related only for the people who wants contribute to this project.
-
-<!-- TBA -->
-
-Instructions for starting project for the contributors.
-Clone repo, run in root of the project:
-
-```
-yarn
-yarn run build
-```
-
-### Development process
-
-You might want to test package while you do changes. For this purpose you can use react app in `packages/sol-rayz-dev` and start package you are working on in watch mode, for example `sol-rayz`:
-
-```bash
-# go to sol-rayz
-cd packages/sol-rayz
-yarn run watch
-
-# in new tab go to react app
-cd packages/sol-rayz-dev
-yarn run start
-```
-
-Now when you changes something `sol-rayz` package it will be automatically updated in `sol-rayz-dev` app.
-
-### Add New new dependency to some package
-
-Here is example how to add new dependency module `@solana/spl-name-service` to `@nfteyez/sol-rayz` package:
-
-```
- lerna add @solana/spl-name-service --scope=@nfteyez/sol-rayz
+const parsedAccountByMint = getParsedNftAccountsByUpdateAuthority({
+  /**
+   * Update authority address
+   */
+  updateAuthority: StringPublicKey;
+  /**
+   * Optionally provide your own connection object.
+   * Otherwise createConnectionConfig() will be used
+   */
+  connection?: Connection;
+});
 ```

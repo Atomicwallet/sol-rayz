@@ -1,28 +1,45 @@
 {
-  "name": "@nfteyez/root",
+  "name": "@nfteyez/sol-rayz",
   "version": "0.10.2",
-  "description": "Set of utils to parse NFTs on Solana blockchain.",
-  "private": true,
-  "workspaces": [
-    "packages/*"
+  "license": "MIT",
+  "author": {
+    "name": "NftEyez Team",
+    "url": "https://nfteyez.global/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NftEyez/sol-rayz.git",
+    "directory": "packages/sol-rayz"
+  },
+  "main": "dist/index",
+  "types": "dist/index",
+  "files": [
+    "dist"
   ],
   "scripts": {
-    "docs": "doctoc --title '**Table of content**' README.md",
-    "clean": "lerna run clean",
-    "clean:deps": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
-    "build": "lerna run build",
-    "watch": "lerna run watch",
-    "publish": "lerna publish",
-    "test": "lerna run test",
-    "lint": "eslint --ext js,ts,tsx ."
+    "build": "yarn run clean && yarn run compile",
+    "watch": "yarn run clean && yarn run compile:watch",
+    "clean": "rimraf -rf ./dist",
+    "compile": "tsc -p tsconfig.build.json",
+    "compile:watch": "tsc -w -p tsconfig.build.json",
+    "prepublishOnly": "yarn run build",
+    "test": "yarn run build"
   },
   "devDependencies": {
-    "@nighttrax/eslint-config-tsx": "~9.0.0",
-    "doctoc": "~2.1.0",
-    "eslint": "^7.11.0",
-    "eslint-plugin-import": "~2.25.0",
-    "lerna": "~4.0.0",
-    "react": "~17.0.0",
+    "@solana/web3.js": "^1.33.0",
+    "@types/lodash.chunk": "^4.2.6",
+    "@types/lodash.orderby": "^4.6.6",
+    "rimraf": "~3.0.2",
     "typescript": "~4.4.0"
-  }
+  },
+  "peerDependencies": {
+    "@solana/web3.js": "^1.33.0"
+  },
+  "dependencies": {
+    "@solana/spl-name-service": "^0.1.3",
+    "borsh": "^0.6.0",
+    "lodash.chunk": "^4.2.0",
+    "lodash.orderby": "^4.6.0"
+  },
+  "gitHead": "af1e2fb612b418eb1fcf8762572dc702c9112970"
 }
