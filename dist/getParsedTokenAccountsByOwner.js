@@ -140,7 +140,7 @@ var getParsedTokenAccountsByOwner = function (_a) {
                             return [4 /*yield*/, connection.getMultipleAccountsInfo(metadataAddressesList)];
                         case 1:
                             accountsList = (_a.sent())
-                                .filter(function (account) { return Buffer.isBuffer(account.data); });
+                                .filter(function (account) { return Buffer.isBuffer(account === null || account === void 0 ? void 0 : account.data); });
                             return [4 /*yield*/, Promise.allSettled(accountsList.map(function (account, index) { return __awaiter(_this, void 0, void 0, function () {
                                     var tokenMetadata, _a;
                                     return __generator(this, function (_b) {

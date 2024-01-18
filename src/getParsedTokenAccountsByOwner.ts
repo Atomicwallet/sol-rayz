@@ -141,7 +141,7 @@ export const getParsedTokenAccountsByOwner = async ({
     try {
       const metadataAddressesList = metadataObjList.map((metadataObj) => Object.values(metadataObj)[0].address);
       const accountsList = (await connection.getMultipleAccountsInfo(metadataAddressesList))
-        .filter(account => Buffer.isBuffer(account.data));
+        .filter(account => Buffer.isBuffer(account?.data));
 
       const promisesWithParsedMetadata: PromiseSettledResult<[number, TokenMetadataObj]>[] = await Promise.allSettled(accountsList.map(async (account, index) => {
         const tokenMetadata = getTokenMetadataFromDecodedMetadata(await decodeTokenMetadata(account?.data));
