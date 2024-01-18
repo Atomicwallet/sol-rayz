@@ -1,6 +1,5 @@
 export { getParsedNftAccountsByOwner } from "./getParsedNftAccountsByOwner";
-export { getParsedNftAccountsByUpdateAuthority } from "./getParsedNftAccountsByUpdateAuthority";
-export { getParsedAccountByMint } from "./getParsedAccountByMint";
+export { getParsedTokenAccountsByOwner } from "./getParsedTokenAccountsByOwner";
 export { resolveToWalletAddress } from "./resolveToWalletAddress";
 export {
   isValidSolanaAddress,
@@ -11,4 +10,4 @@ export {
 
 // weird way to export type
 // https://github.com/microsoft/TypeScript/issues/28481#issuecomment-552938424
-export type Options = import("./getParsedNftAccountsByOwner").Options;
+export type Options = import("./getParsedTokenAccountsByOwner").Options;
