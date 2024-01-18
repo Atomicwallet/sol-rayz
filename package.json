@@ -22,7 +22,8 @@
     "compile": "tsc -p tsconfig.build.json",
     "compile:watch": "tsc -w -p tsconfig.build.json",
     "prepublishOnly": "yarn run build",
-    "test": "yarn run build"
+    "test": "yarn run build",
+    "preinstall": "yarn run build"
   },
   "devDependencies": {
     "@solana/web3.js": "^1.33.0",
