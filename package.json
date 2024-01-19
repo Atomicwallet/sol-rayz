@@ -18,13 +18,12 @@
   "scripts": {
     "build": "yarn run clean && yarn run compile",
     "watch": "yarn run clean && yarn run compile:watch",
-    "clean": "rimraf -rf ./dist",
+    "clean": "rm -fr ./dist",
     "compile": "tsc -p tsconfig.build.json",
     "compile:watch": "tsc -w -p tsconfig.build.json",
     "prepublishOnly": "yarn run build",
     "test": "yarn run build",
-    "install": "yarn run build",
-    "rimraf": "./node_modules/rimraf/bin.js"
+    "install": "yarn run build"
   },
   "devDependencies": {
     "@solana/web3.js": "^1.33.0",
