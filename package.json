@@ -1,6 +1,6 @@
 {
   "name": "sol-rayz",
-  "version": "0.99.3",
+  "version": "0.99.4",
   "license": "MIT",
   "author": {
     "name": "NftEyez Team",
@@ -19,12 +19,11 @@
     "build": "yarn run clean && yarn run compile",
     "watch": "yarn run clean && yarn run compile:watch",
     "clean": "rm -fr ./dist",
-    "compile": "tsc -p tsconfig.build.json",
+    "compile": "npx tsc -p tsconfig.build.json",
     "compile:watch": "tsc -w -p tsconfig.build.json",
     "prepublishOnly": "yarn run build",
     "test": "yarn run build",
-    "install": "yarn run build",
-    "tsc": "./node_modules/typescript/bin/tsc"
+    "install": "yarn run build"
   },
   "devDependencies": {
     "@solana/web3.js": "1.87.6",
