@@ -109,6 +109,3 @@ typings/
 
 # IDE
 .idea
-
-# DIST
-dist/
